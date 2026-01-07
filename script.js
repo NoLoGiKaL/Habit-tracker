@@ -278,13 +278,15 @@ function calcProgressPercent(habit, year, month, daysInMonth) {
     daysPercent = (doneDays / habit.goalDays) * 100;
   } else if (goalType === 'hoursTotal' && habit.goalHours > 0) {
     timePercent = (totalHours / habit.goalHours) * 100;
-    daysPercent = timePercent; // Для прогресса используем время
+    daysPercent = timePercent;
   } else if (goalType === 'hoursPerDay' && habit.goalHoursPerDay > 0) {
-    const targetHoursMonth = habit.goalHoursPerDay * daysInMonth;
-    timePercent = (totalHours / targetHoursMonth) * 100;
-    daysPercent = timePercent; // Для прогресса используем время
+    // Используем durationDays вместо daysInMonth!
+    const activeDays = habit.durationDays || daysInMonth;
+    const targetHoursTotal = habit.goalHoursPerDay * activeDays;
+    timePercent = (totalHours / targetHoursTotal) * 100;
+    daysPercent = timePercent;
   } else {
-    // Fallback для старых записей без goalType
+    // Fallback для старых записей
     if (typeof habit.goalDays === 'number' && habit.goalDays > 0) {
       daysPercent = (doneDays / habit.goalDays) * 100;
     }
@@ -295,6 +297,7 @@ function calcProgressPercent(habit, year, month, daysInMonth) {
   
   return { daysPercent, timePercent };
 }
+
 
 
 // ===== Goal summary for modal =====
