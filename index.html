@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Привычки по дням месяца</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="page-shell">
+    <!-- Header -->
+    <header class="page-header">
+      <div>
+        <h1>Привычки по дням месяца</h1>
+        <p>Отмечайте выполнение и следите за прогрессом по целям.</p>
+      </div>
+
+      <div class="header-controls">
+        <div class="select-group">
+          <select id="yearSelect"></select>
+          <select id="monthSelect"></select>
+        </div>
+
+        <div class="actions-wrapper">
+          <button id="actionBtn" class="btn btn--primary">Действия</button>
+          <div id="actionMenu" class="action-menu hidden">
+            <button id="addHabitBtn" class="action-menu-item">+ Добавить привычку</button>
+            <button id="deleteHabitBtn" class="action-menu-item">🗑 Удалить привычку</button>
+            <button id="dailyHoursBtn" class="action-menu-item">⏰ Изменить часы в день</button>
+            <button id="closeMenuBtn" class="action-menu-item hidden">Закрыть меню</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Table -->
+    <div class="table-wrapper">
+      <div class="tracker-card-elevated tracker-full-width">
+        <table class="habits-table">
+          <thead id="tableHead"></thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MODALS ===== -->
+
+  <!-- Day Modal -->
+  <div id="dayModalOverlay" class="modal-overlay" aria-hidden="true">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Отметка дня</h2>
+        <button id="closeModalBtn" class="modal-close-btn" aria-label="Закрыть">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Привычка:</label>
+          <input type="text" id="dayHabitName" readonly class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label>Дата:</label>
+          <input type="text" id="dayDate" readonly class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label>Итого за этот день:</label>
+          <input type="text" id="daySummary" readonly class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label id="remainingLabel">Осталось:</label>
+          <input type="text" id="remainingHours" readonly class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label>Время (часы и минуты):</label>
+          <div class="modal-row">
+            <div>
+              <label class="sub-label">Часы:</label>
+              <input type="number" id="timeHours" min="0" max="24" class="form-control">
+            </div>
+            <div>
+              <label class="sub-label">Минуты:</label>
+              <input type="number" id="timeMinutes" min="0" max="59" class="form-control">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Секундомер:</label>
+          <div style="display: flex; gap: var(--space-8); align-items: center;">
+            <input type="text" id="timerDisplay" value="00:00:00" readonly style="flex: 1; font-family: monospace; text-align: center;">
+            <button id="timerStartBtn" class="btn btn--primary btn--sm">Старт</button>
+            <button id="timerPauseBtn" class="btn btn--secondary btn--sm">Пауза</button>
+            <button id="timerResetBtn" class="btn btn--secondary btn--sm">Сброс</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Комментарий:</label>
+          <textarea id="dayComment" class="form-control" rows="3"></textarea>
+        </div>
+      </div>
+
+      <div class="modal-actions-row">
+        <button id="openHistoryBtn" class="btn btn--secondary">История</button>
+        <button id="resetDayBtn" class="btn btn--secondary">Обнулить день</button>
+        <div class="modal-actions-right">
+          <button id="saveDayBtn" class="btn btn--primary">Подтвердить</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- History Modal -->
+  <div id="historyModalOverlay" class="modal-overlay" aria-hidden="true">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">История привычки</h2>
+        <button id="closeHistoryBtn" class="modal-close-btn" aria-label="Закрыть">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div id="historyContent"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Habit Modal -->
+  <div id="addHabitModalOverlay" class="modal-overlay" aria-hidden="true">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Добавить привычку</h2>
+        <button id="closeAddHabitBtn" class="modal-close-btn" aria-label="Закрыть">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Название привычки:</label>
+          <input type="text" id="habitNameInput" class="form-control" placeholder="например, Бегать">
+        </div>
+
+        <div class="form-group">
+          <label>Длительность (для ориентира):</label>
+          <div class="modal-row-3">
+            <div>
+              <label class="sub-label">Месяцев:</label>
+              <input type="number" id="durationMonths" min="0" value="0" class="form-control">
+            </div>
+            <div>
+              <label class="sub-label">Дней:</label>
+              <input type="number" id="durationDays" min="0" value="0" class="form-control">
+            </div>
+            <div>
+              <label class="sub-label">Часов:</label>
+              <input type="number" id="durationHours" min="0" value="0" class="form-control">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Тип цели:</label>
+          <select id="goalTypeSelect" class="form-control">
+            <option value="daysPerWeek">Количество дней в неделю</option>
+            <option value="daysTotal">Количество дней</option>
+            <option value="hoursTotal">Количество часов</option>
+            <option value="hoursPerDay">Количество часов в день</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Значение цели:</label>
+          <input type="number" id="goalValueInput" min="0" step="0.5" class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label>Комментарий к привычке:</label>
+          <textarea id="habitCommentInput" class="form-control" rows="2"></textarea>
+        </div>
+      </div>
+
+      <div class="modal-actions-right">
+        <button id="cancelAddHabitBtn" class="btn btn--secondary">Отменить</button>
+        <button id="createHabitBtn" class="btn btn--primary">Создать</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Habit Modal -->
+  <div id="editHabitModalOverlay" class="modal-overlay" aria-hidden="true">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Редактировать привычку</h2>
+        <button id="closeEditHabitBtn" class="modal-close-btn" aria-label="Закрыть">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Название привычки:</label>
+          <input type="text" id="editHabitNameInput" class="form-control">
+        </div>
+      </div>
+
+      <div class="modal-actions-right">
+	<button id="deleteHabitFromEditBtn" class="btn btn--secondary">Удалить привычку</button>
+        <button id="cancelEditHabitBtn" class="btn btn--secondary">Отменить</button>
+        <button id="saveHabitEditBtn" class="btn btn--primary">Сохранить</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Habit Modal -->
+  <div id="deleteHabitModalOverlay" class="modal-overlay" aria-hidden="true">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Удаление привычки</h2>
+        <button id="closeDeleteHabitBtn" class="modal-close-btn" aria-label="Закрыть">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Поиск привычки:</label>
+          <input type="text" id="deleteHabitSearchInput" class="form-control" placeholder="введите название привычки">
+        </div>
+
+        <div id="deleteHabitInfo" style="margin-bottom: var(--space-16); padding: var(--space-12); background: var(--color-secondary); border-radius: var(--radius-base);"></div>
+      </div>
+
+      <div class="modal-actions-right">
+        <button id="cancelDeleteHabitBtn" class="btn btn--secondary">Отменить</button>
+        <button id="confirmDeleteHabitBtn" class="btn btn--primary">Удалить привычку</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Daily Hours Modal -->
+  <div id="dailyHoursModalOverlay" class="modal-overlay" aria-hidden="true">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Изменить часы в день</h2>
+        <button id="closeDailyHoursBtn" class="modal-close-btn" aria-label="Закрыть">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Рекомендуемое количество часов работы в день:</label>
+          <input type="number" id="dailyHoursInput" min="0" step="0.5" class="form-control">
+        </div>
+      </div>
+
+      <div class="modal-actions-right">
+        <button id="cancelDailyHoursBtn" class="btn btn--secondary">Отменить</button>
+        <button id="saveDailyHoursBtn" class="btn btn--primary">Сохранить</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
