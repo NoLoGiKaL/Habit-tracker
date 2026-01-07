@@ -262,26 +262,40 @@ function calcHabitSummary(habit, year, month, daysInMonth) {
 }
 
 function calcProgressPercent(habit, year, month, daysInMonth) {
-  const { doneSummary, totalHours } = calcHabitSummary(
-    habit,
-    year,
-    month,
-    daysInMonth
-  );
-
+  const { doneSummary, totalHours } = calcHabitSummary(habit, year, month, daysInMonth);
   const doneDays = parseInt(doneSummary, 10) || 0;
+  
   let daysPercent = 0;
-  if (typeof habit.goalDays === 'number' && habit.goalDays > 0) {
-    daysPercent = (doneDays / habit.goalDays) * 100;
-  }
-
   let timePercent = 0;
-  if (typeof habit.goalHours === 'number' && habit.goalHours > 0) {
+  
+  const goalType = habit.goalType;
+  
+  if (goalType === 'daysPerWeek' && habit.goalDaysPerWeek > 0) {
+    const weeksInMonth = daysInMonth / 7;
+    const targetDaysMonth = habit.goalDaysPerWeek * weeksInMonth;
+    daysPercent = (doneDays / targetDaysMonth) * 100;
+  } else if (goalType === 'daysTotal' && habit.goalDays > 0) {
+    daysPercent = (doneDays / habit.goalDays) * 100;
+  } else if (goalType === 'hoursTotal' && habit.goalHours > 0) {
     timePercent = (totalHours / habit.goalHours) * 100;
+    daysPercent = timePercent; // Для прогресса используем время
+  } else if (goalType === 'hoursPerDay' && habit.goalHoursPerDay > 0) {
+    const targetHoursMonth = habit.goalHoursPerDay * daysInMonth;
+    timePercent = (totalHours / targetHoursMonth) * 100;
+    daysPercent = timePercent; // Для прогресса используем время
+  } else {
+    // Fallback для старых записей без goalType
+    if (typeof habit.goalDays === 'number' && habit.goalDays > 0) {
+      daysPercent = (doneDays / habit.goalDays) * 100;
+    }
+    if (typeof habit.goalHours === 'number' && habit.goalHours > 0) {
+      timePercent = (totalHours / habit.goalHours) * 100;
+    }
   }
-
+  
   return { daysPercent, timePercent };
 }
+
 
 // ===== Goal summary for modal =====
 
