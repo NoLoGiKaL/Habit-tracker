@@ -1115,6 +1115,7 @@ a:hover {
   display: flex;
   align-items: center;
   gap: var(--space-8);
+  flex-wrap: wrap;
 }
 
 .select-group select {
@@ -1196,6 +1197,63 @@ a:hover {
   background: var(--color-secondary);
 }
 
+/* ===== SUMMARY ===== */
+
+.stats-bar {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(120px, 1fr));
+  gap: var(--space-12);
+}
+
+.stat-item {
+  min-height: 72px;
+  padding: var(--space-12) var(--space-16);
+  border: 1px solid var(--color-card-border);
+  border-radius: var(--radius-base);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-4);
+}
+
+.stat-item strong {
+  font-size: var(--font-size-2xl);
+  line-height: 1;
+  color: var(--color-text);
+}
+
+.stat-item span {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+/* ===== QUICK ADD ===== */
+
+.quick-add-panel {
+  border: 1px solid var(--color-card-border);
+  border-radius: var(--radius-base);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-16);
+}
+
+.quick-add-form {
+  display: grid;
+  grid-template-columns: minmax(220px, 2fr) minmax(170px, 1fr) minmax(120px, 0.7fr) auto;
+  align-items: end;
+  gap: var(--space-12);
+}
+
+.quick-add-form .form-group {
+  margin-bottom: 0;
+}
+
+.quick-add-form .btn {
+  min-height: 40px;
+}
+
 /* ===== FORM ELEMENTS ===== */
 
 .form-control {
@@ -1269,6 +1327,7 @@ textarea.form-control {
   width: 100%;
   border-collapse: collapse;
   background: var(--color-surface);
+  table-layout: auto;
 }
 
 .habits-table th,
@@ -1289,11 +1348,38 @@ textarea.form-control {
 }
 .habits-table thead tr:nth-child(2) th {
   min-width: 0; /* переопределяем inline-стиль 34px */
+  vertical-align: middle;
 }
+
+.habits-table thead tr:nth-child(2) th span {
+  display: block;
+  line-height: 1.15;
+}
+
+.weekday-label {
+  margin-top: 2px;
+  color: var(--color-text-secondary);
+  font-size: 10px;
+}
+
+.habits-table th.is-today,
+.habits-table td.is-today {
+  background: rgba(var(--color-success-rgb), 0.12);
+}
+
 .habits-table th.left,
 .habits-table td.left {
   text-align: left;
   padding-left: var(--space-12);
+  min-width: 190px;
+}
+
+.habits-table .sticky-col {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background: inherit;
+  box-shadow: 1px 0 0 var(--color-card-border-inner);
 }
 
 .habits-table tbody tr:nth-child(odd) {
@@ -1308,27 +1394,62 @@ textarea.form-control {
   background: var(--color-secondary-hover);
 }
 
-/* Day checkboxes */
+/* Day buttons */
 .day-checkbox-cell {
   padding: var(--space-4) var(--space-2); /* меньше отступы */
   text-align: center;
 }
 
-.day-checkbox {
-  width: 18px;
-  height: 18px;
+.day-toggle {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid var(--color-card-border-inner);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-btn-primary-text);
   cursor: pointer;
-  accent-color: var(--color-primary);
-  transition: transform var(--duration-fast) var(--ease-standard);
+  font-size: 14px;
+  font-weight: var(--font-weight-semibold);
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform var(--duration-fast) var(--ease-standard),
+    background var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard);
 }
 
-.day-checkbox:hover {
+.day-toggle:hover {
   transform: scale(1.1);
+  border-color: var(--color-primary);
 }
 
-.day-checkbox:focus-visible {
+.day-toggle:focus-visible {
   outline: var(--focus-outline);
   outline-offset: 2px;
+}
+
+.day-toggle.is-done {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.day-toggle:disabled {
+  cursor: not-allowed;
+  opacity: 0.35;
+  transform: none;
+}
+
+.is-inactive-day {
+  background: rgba(var(--color-slate-500-rgb), 0.06);
+}
+
+.empty-state-cell {
+  padding: var(--space-32) var(--space-16) !important;
+  color: var(--color-text-secondary);
+  text-align: center !important;
+  white-space: normal !important;
 }
 
 /* Progress bar */
@@ -1357,6 +1478,10 @@ textarea.form-control {
   background: var(--color-primary);
   box-shadow: 0 0 8px rgba(var(--color-teal-500-rgb), 0.5);
   transition: width var(--duration-normal) var(--ease-standard);
+}
+
+.progress-bar-fill-days.is-complete {
+  background: var(--color-success);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -1503,6 +1628,54 @@ textarea.form-control {
   display: none !important;
 }
 
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.history-table th,
+.history-table td {
+  border: 1px solid var(--color-border);
+  padding: var(--space-8);
+  text-align: left;
+  vertical-align: top;
+}
+
+.history-table th {
+  background: var(--color-secondary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.empty-history {
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
+.delete-info-box {
+  min-height: 44px;
+  margin-bottom: var(--space-16);
+  padding: var(--space-12);
+  background: var(--color-secondary);
+  border-radius: var(--radius-base);
+}
+
+.delete-info {
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
+}
+
+.delete-info--success {
+  color: var(--color-success);
+}
+
+.delete-info--warning {
+  color: var(--color-warning);
+}
+
+.delete-info--muted {
+  color: var(--color-text-secondary);
+}
+
 /* ===== RESPONSIVE ===== */
 
 @media (max-width: 1024px) {
@@ -1527,6 +1700,18 @@ textarea.form-control {
 
   .select-group select {
     flex: 1;
+  }
+
+  .stats-bar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .quick-add-form {
+    grid-template-columns: minmax(220px, 1.5fr) minmax(160px, 1fr);
+  }
+
+  .quick-add-form .btn {
+    width: 100%;
   }
 
   .actions-wrapper {
@@ -1576,6 +1761,10 @@ textarea.form-control {
 
   .select-group select {
     width: 100%;
+  }
+
+  .quick-add-form {
+    grid-template-columns: 1fr;
   }
 
   .btn {
@@ -1631,9 +1820,10 @@ textarea.form-control {
     height: 16px;
   }
 
-  .day-checkbox {
-    width: 16px;
-    height: 16px;
+  .day-toggle {
+    width: 20px;
+    height: 20px;
+    font-size: 13px;
   }
 }
 
@@ -1679,9 +1869,18 @@ textarea.form-control {
     padding: var(--space-2);
   }
 
-  .day-checkbox {
-    width: 14px;
-    height: 14px;
+  .stats-bar {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-item {
+    min-height: 60px;
+  }
+
+  .day-toggle {
+    width: 18px;
+    height: 18px;
+    font-size: 12px;
   }
 
   .progress-bar-bg {

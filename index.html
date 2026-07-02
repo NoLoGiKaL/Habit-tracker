@@ -17,21 +17,26 @@
 
       <div class="header-controls">
         <div class="select-group">
+          <label class="sr-only" for="yearSelect">Год</label>
           <select id="yearSelect"></select>
+          <label class="sr-only" for="monthSelect">Месяц</label>
           <select id="monthSelect"></select>
+          <button id="todayBtn" class="btn btn--secondary btn--sm" type="button">Сегодня</button>
         </div>
 
         <div class="actions-wrapper">
-          <button id="actionBtn" class="btn btn--primary">Действия</button>
+          <button id="actionBtn" class="btn btn--primary" type="button">Действия</button>
           <div id="actionMenu" class="action-menu hidden">
-            <button id="addHabitBtn" class="action-menu-item">+ Добавить привычку</button>
-            <button id="deleteHabitBtn" class="action-menu-item">🗑 Удалить привычку</button>
-            <button id="dailyHoursBtn" class="action-menu-item">⏰ Изменить часы в день</button>
-            <button id="closeMenuBtn" class="action-menu-item hidden">Закрыть меню</button>
+            <button id="addHabitBtn" class="action-menu-item" type="button">+ Добавить привычку</button>
+            <button id="deleteHabitBtn" class="action-menu-item" type="button">Удалить привычку</button>
+            <button id="dailyHoursBtn" class="action-menu-item" type="button">Изменить часы в день</button>
+            <button id="closeMenuBtn" class="action-menu-item hidden" type="button">Закрыть меню</button>
           </div>
         </div>
       </div>
     </header>
+
+    <section id="statsBar" class="stats-bar" aria-label="Сводка за выбранный месяц"></section>
 
     <!-- Table -->
     <div class="table-wrapper">
@@ -42,6 +47,32 @@
         </table>
       </div>
     </div>
+
+    <section class="quick-add-panel" aria-label="Новая привычка">
+      <form id="quickAddForm" class="quick-add-form">
+        <div class="form-group">
+          <label for="quickHabitNameInput">Привычка</label>
+          <input type="text" id="quickHabitNameInput" class="form-control" placeholder="например, Бегать">
+        </div>
+
+        <div class="form-group">
+          <label for="quickGoalTypeSelect">Цель</label>
+          <select id="quickGoalTypeSelect" class="form-control">
+            <option value="daysPerWeek">Дней в неделю</option>
+            <option value="daysTotal">Дней всего</option>
+            <option value="hoursTotal">Часов всего</option>
+            <option value="hoursPerDay">Часов в день</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="quickGoalValueInput">Значение</label>
+          <input type="number" id="quickGoalValueInput" min="0" step="1" value="3" class="form-control">
+        </div>
+
+        <button id="quickAddHabitBtn" class="btn btn--primary" type="submit">Добавить</button>
+      </form>
+    </section>
   </div>
 
   <!-- ===== MODALS ===== -->
@@ -93,9 +124,9 @@
           <label>Секундомер:</label>
           <div style="display: flex; gap: var(--space-8); align-items: center;">
             <input type="text" id="timerDisplay" value="00:00:00" readonly style="flex: 1; font-family: monospace; text-align: center;">
-            <button id="timerStartBtn" class="btn btn--primary btn--sm">Старт</button>
-            <button id="timerPauseBtn" class="btn btn--secondary btn--sm">Пауза</button>
-            <button id="timerResetBtn" class="btn btn--secondary btn--sm">Сброс</button>
+            <button id="timerStartBtn" class="btn btn--primary btn--sm" type="button">Старт</button>
+            <button id="timerPauseBtn" class="btn btn--secondary btn--sm" type="button">Пауза</button>
+            <button id="timerResetBtn" class="btn btn--secondary btn--sm" type="button">Сброс</button>
           </div>
         </div>
 
@@ -106,10 +137,10 @@
       </div>
 
       <div class="modal-actions-row">
-        <button id="openHistoryBtn" class="btn btn--secondary">История</button>
-        <button id="resetDayBtn" class="btn btn--secondary">Обнулить день</button>
+        <button id="openHistoryBtn" class="btn btn--secondary" type="button">История</button>
+        <button id="resetDayBtn" class="btn btn--secondary" type="button">Обнулить день</button>
         <div class="modal-actions-right">
-          <button id="saveDayBtn" class="btn btn--primary">Подтвердить</button>
+          <button id="saveDayBtn" class="btn btn--primary" type="button">Подтвердить</button>
         </div>
       </div>
     </div>
@@ -183,8 +214,8 @@
       </div>
 
       <div class="modal-actions-right">
-        <button id="cancelAddHabitBtn" class="btn btn--secondary">Отменить</button>
-        <button id="createHabitBtn" class="btn btn--primary">Создать</button>
+        <button id="cancelAddHabitBtn" class="btn btn--secondary" type="button">Отменить</button>
+        <button id="createHabitBtn" class="btn btn--primary" type="button">Создать</button>
       </div>
     </div>
   </div>
@@ -205,9 +236,9 @@
       </div>
 
       <div class="modal-actions-right">
-	<button id="deleteHabitFromEditBtn" class="btn btn--secondary">Удалить привычку</button>
-        <button id="cancelEditHabitBtn" class="btn btn--secondary">Отменить</button>
-        <button id="saveHabitEditBtn" class="btn btn--primary">Сохранить</button>
+        <button id="deleteHabitFromEditBtn" class="btn btn--secondary" type="button">Удалить привычку</button>
+        <button id="cancelEditHabitBtn" class="btn btn--secondary" type="button">Отменить</button>
+        <button id="saveHabitEditBtn" class="btn btn--primary" type="button">Сохранить</button>
       </div>
     </div>
   </div>
@@ -226,12 +257,12 @@
           <input type="text" id="deleteHabitSearchInput" class="form-control" placeholder="введите название привычки">
         </div>
 
-        <div id="deleteHabitInfo" style="margin-bottom: var(--space-16); padding: var(--space-12); background: var(--color-secondary); border-radius: var(--radius-base);"></div>
+        <div id="deleteHabitInfo" class="delete-info-box"></div>
       </div>
 
       <div class="modal-actions-right">
-        <button id="cancelDeleteHabitBtn" class="btn btn--secondary">Отменить</button>
-        <button id="confirmDeleteHabitBtn" class="btn btn--primary">Удалить привычку</button>
+        <button id="cancelDeleteHabitBtn" class="btn btn--secondary" type="button">Отменить</button>
+        <button id="confirmDeleteHabitBtn" class="btn btn--primary" type="button">Удалить привычку</button>
       </div>
     </div>
   </div>
@@ -252,8 +283,8 @@
       </div>
 
       <div class="modal-actions-right">
-        <button id="cancelDailyHoursBtn" class="btn btn--secondary">Отменить</button>
-        <button id="saveDailyHoursBtn" class="btn btn--primary">Сохранить</button>
+        <button id="cancelDailyHoursBtn" class="btn btn--secondary" type="button">Отменить</button>
+        <button id="saveDailyHoursBtn" class="btn btn--primary" type="button">Сохранить</button>
       </div>
     </div>
   </div>
